@@ -1,0 +1,330 @@
+{
+  "appName": "Employee Details Form",
+  "version": "1.0.0",
+  "description": "Comprehensive PowerApps canvas application for managing employee information",
+
+  "environment": {
+    "name": "Production",
+    "region": "US",
+    "dataverse": false,
+    "sqlServer": true
+  },
+
+  "database": {
+    "type": "SQL Server",
+    "server": "your-server.database.windows.net",
+    "database": "EmployeeManagement",
+    "tables": [
+      "Employees",
+      "Departments"
+    ]
+  },
+
+  "dataConnections": [
+    {
+      "name": "EmployeeDatabase",
+      "type": "SQL",
+      "entity": "Employees",
+      "refreshMode": "Manual",
+      "cacheEnabled": true,
+      "cacheDuration": 300
+    },
+    {
+      "name": "DepartmentList",
+      "type": "SQL",
+      "entity": "Departments",
+      "refreshMode": "OnLoad",
+      "cacheEnabled": true,
+      "cacheDuration": 3600
+    }
+  ],
+
+  "formFields": {
+    "basicInformation": {
+      "employeeId": {
+        "type": "text",
+        "required": true,
+        "validation": "pattern:^[A-Z]{3}[0-9]{3,}$",
+        "placeholder": "EMP001",
+        "maxLength": 20
+      },
+      "firstName": {
+        "type": "text",
+        "required": true,
+        "maxLength": 50
+      },
+      "lastName": {
+        "type": "text",
+        "required": true,
+        "maxLength": 50
+      },
+      "email": {
+        "type": "email",
+        "required": true,
+        "validation": "email",
+        "maxLength": 100
+      },
+      "phone": {
+        "type": "phone",
+        "required": false,
+        "validation": "phone",
+        "placeholder": "(555) 123-4567"
+      }
+    },
+    "departmentPosition": {
+      "department": {
+        "type": "dropdown",
+        "required": true,
+        "dataSource": "DepartmentList"
+      },
+      "position": {
+        "type": "text",
+        "required": true,
+        "maxLength": 100
+      }
+    },
+    "employmentDetails": {
+      "startDate": {
+        "type": "date",
+        "required": true,
+        "validation": "pastOrToday"
+      },
+      "employmentType": {
+        "type": "dropdown",
+        "required": true,
+        "options": [
+          "Full-Time",
+          "Part-Time",
+          "Contract",
+          "Intern",
+          "Freelance",
+          "Temporary"
+        ]
+      },
+      "salary": {
+        "type": "number",
+        "required": false,
+        "validation": "non-negative",
+        "securityLevel": "HR_ONLY",
+        "min": 0,
+        "max": 10000000
+      }
+    },
+    "contactInformation": {
+      "address": {
+        "type": "text",
+        "required": false,
+        "maxLength": 200
+      },
+      "city": {
+        "type": "text",
+        "required": false,
+        "maxLength": 50
+      },
+      "state": {
+        "type": "text",
+        "required": false,
+        "maxLength": 50
+      },
+      "postalCode": {
+        "type": "text",
+        "required": false,
+        "validation": "zipCode",
+        "maxLength": 20
+      }
+    }
+  },
+
+  "validation": {
+    "emailPattern": "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$",
+    "phonePattern": "^[0-9\\-\\+\\(\\)\\ ]{7,}$",
+    "zipCodePattern": "^[0-9]{5}(-[0-9]{4})?|[A-Z][0-9][A-Z]\\ ?[0-9][A-Z][0-9]$",
+    "employeeIdPattern": "^[A-Z]{3}[0-9]{3,}$"
+  },
+
+  "security": {
+    "fieldLevelSecurity": {
+      "salary": ["HR", "Manager", "SystemAdmin"],
+      "phone": ["HR", "Manager", "EmployeeItself", "SystemAdmin"],
+      "email": ["All"],
+      "address": ["HR", "Manager", "SystemAdmin"]
+    },
+    "rowLevelSecurity": {
+      "employeeRecords": "Users can only view/edit employees in their department",
+      "enabled": true
+    },
+    "auditLogging": {
+      "enabled": true,
+      "trackChanges": true,
+      "trackDeletions": true,
+      "retentionDays": 2555
+    }
+  },
+
+  "ui": {
+    "theme": "Modern",
+    "primaryColor": "RGB(0, 51, 102)",
+    "secondaryColor": "RGB(0, 102, 204)",
+    "successColor": "RGB(0, 176, 80)",
+    "errorColor": "RGB(192, 0, 0)",
+    "warningColor": "RGB(255, 128, 0)",
+    "layout": {
+      "screenWidth": 1600,
+      "screenHeight": 1000,
+      "containerPadding": 20,
+      "spacing": 10
+    },
+    "responsive": {
+      "mobile": {
+        "breakpoint": 360,
+        "layout": "vertical",
+        "columns": 1
+      },
+      "tablet": {
+        "breakpoint": 768,
+        "layout": "vertical",
+        "columns": 2
+      },
+      "desktop": {
+        "breakpoint": 1600,
+        "layout": "horizontal",
+        "columns": 3
+      }
+    }
+  },
+
+  "features": {
+    "createEmployee": {
+      "enabled": true,
+      "requiresApproval": false
+    },
+    "editEmployee": {
+      "enabled": true,
+      "allowBulkEdit": false
+    },
+    "deleteEmployee": {
+      "enabled": true,
+      "requiresConfirmation": true,
+      "restrictedRoles": ["User"]
+    },
+    "searchFilter": {
+      "enabled": true,
+      "searchFields": ["FirstName", "LastName", "Email", "EmployeeID"]
+    },
+    "export": {
+      "enabled": true,
+      "formats": ["Excel", "PDF"],
+      "restrictedRoles": ["User"]
+    },
+    "reporting": {
+      "enabled": true,
+      "dashboards": ["EmployeeCount", "DepartmentBreakdown", "StartDateAnalysis"]
+    }
+  },
+
+  "notifications": {
+    "onSaveSuccess": "Employee record saved successfully!",
+    "onSaveError": "Error saving employee record. Please try again.",
+    "onDeleteSuccess": "Employee record deleted successfully.",
+    "onDeleteError": "Error deleting employee record.",
+    "validationError": "Please fill in all required fields (marked with *).",
+    "emailValidationError": "Please enter a valid email address.",
+    "phoneValidationError": "Please enter a valid phone number.",
+    "requiredFieldError": "{fieldName} is required."
+  },
+
+  "buttons": {
+    "save": {
+      "label": "Save",
+      "color": "RGB(0, 102, 204)",
+      "tooltip": "Save employee information"
+    },
+    "cancel": {
+      "label": "Cancel",
+      "color": "RGB(200, 200, 200)",
+      "tooltip": "Discard changes"
+    },
+    "clear": {
+      "label": "Clear",
+      "color": "RGB(255, 128, 0)",
+      "tooltip": "Clear all form fields"
+    },
+    "delete": {
+      "label": "Delete",
+      "color": "RGB(192, 0, 0)",
+      "tooltip": "Delete employee record"
+    },
+    "export": {
+      "label": "Export",
+      "color": "RGB(0, 176, 80)",
+      "tooltip": "Export employee list"
+    }
+  },
+
+  "roles": {
+    "HR": {
+      "description": "Human Resources Staff",
+      "permissions": ["create", "read", "update", "delete", "viewAll", "viewSalary", "export"]
+    },
+    "Manager": {
+      "description": "Department Manager",
+      "permissions": ["create", "read", "update", "viewDepartment", "viewPhone", "export"]
+    },
+    "Employee": {
+      "description": "Regular Employee",
+      "permissions": ["read", "viewOwn"]
+    },
+    "SystemAdmin": {
+      "description": "System Administrator",
+      "permissions": ["create", "read", "update", "delete", "viewAll", "admin"]
+    }
+  },
+
+  "performance": {
+    "dataPageSize": 100,
+    "enableCaching": true,
+    "cacheDuration": 300,
+    "loadTimeout": 30000,
+    "queryTimeout": 30,
+    "maxRecordsInView": 10000
+  },
+
+  "api": {
+    "endpoints": {
+      "employees": "/api/employees",
+      "departments": "/api/departments",
+      "search": "/api/employees/search",
+      "export": "/api/employees/export"
+    },
+    "timeout": 30000,
+    "retries": 3,
+    "retryDelay": 1000
+  },
+
+  "logging": {
+    "enabled": true,
+    "level": "info",
+    "loggerName": "EmployeeForm",
+    "outputs": ["console", "file", "applicationInsights"],
+    "applicationInsights": {
+      "instrumentationKey": "YOUR_INSTRUMENTATION_KEY_HERE"
+    }
+  },
+
+  "deployment": {
+    "environments": ["Development", "Staging", "Production"],
+    "approvalRequired": true,
+    "testingRequired": true,
+    "documentationRequired": true
+  },
+
+  "support": {
+    "email": "support@company.com",
+    "phone": "+1-800-SUPPORT",
+    "ticketSystem": "https://support.company.com",
+    "knowledgeBase": "https://kb.company.com/employee-form"
+  },
+
+  "lastUpdated": "2024-03-10",
+  "maintainer": "IT Department"
+}

@@ -1,0 +1,576 @@
+# PowerApps Canvas App: Employee Details Form
+# This app provides a comprehensive employee information management system
+
+App:
+  Name: "EmployeeDetailsForm"
+  Version: "1.0.0"
+  Description: "Form application for managing employee details"
+  Theme: "Modern"
+
+  # App-level variables and collections
+  Variables:
+    isEditMode: false
+    selectedEmployeeId: ""
+    formValidation:
+      isValid: false
+      errors: []
+
+  # Data connections
+  DataConnections:
+    - Name: "EmployeeDatabase"
+      Type: "SQL"
+      Entity: "Employees"
+
+    - Name: "DepartmentList"
+      Type: "SQL"
+      Entity: "Departments"
+
+  # Screens
+  Screens:
+    - Name: "MainScreen"
+      Type: "ScreenLayout"
+      Properties:
+        Fill: "Color.White"
+        Height: "1000"
+        Width: "1600"
+
+      # Header Container
+      Controls:
+        - Name: "HeaderContainer"
+          Type: "Container"
+          Properties:
+            Fill: "RGBA(0, 51, 102, 1)"
+            Height: "80"
+            X: "0"
+            Y: "0"
+            Width: "1600"
+
+          Controls:
+            - Name: "AppTitle"
+              Type: "Label"
+              Properties:
+                Text: "Employee Details Form"
+                FontSize: "28"
+                FontColor: "Color.White"
+                Bold: true
+                X: "20"
+                Y: "20"
+
+        # Form Container
+        - Name: "FormContainer"
+          Type: "Container"
+          Properties:
+            Fill: "Color.White"
+            BorderThickness: "1"
+            BorderColor: "RGBA(200, 200, 200, 1)"
+            Height: "850"
+            X: "20"
+            Y: "100"
+            Width: "1560"
+            PaddingLeft: "20"
+            PaddingRight: "20"
+
+          Controls:
+            # Basic Information Section
+            - Name: "BasicInfoLabel"
+              Type: "Label"
+              Properties:
+                Text: "Basic Information"
+                FontSize: "18"
+                FontColor: "RGBA(0, 51, 102, 1)"
+                Bold: true
+                X: "20"
+                Y: "20"
+
+            # Employee ID
+            - Name: "EmployeeIDLabel"
+              Type: "Label"
+              Properties:
+                Text: "Employee ID *"
+                FontSize: "12"
+                X: "20"
+                Y: "50"
+
+            - Name: "EmployeeIDInput"
+              Type: "TextInput"
+              Properties:
+                HintText: "Enter employee ID"
+                BorderThickness: "1"
+                BorderColor: "RGBA(150, 150, 150, 1)"
+                Height: "40"
+                Width: "400"
+                X: "20"
+                Y: "70"
+                Default: "=If(isEditMode, selectedEmployee.EmployeeID, '')"
+
+            # First Name
+            - Name: "FirstNameLabel"
+              Type: "Label"
+              Properties:
+                Text: "First Name *"
+                FontSize: "12"
+                X: "440"
+                Y: "50"
+
+            - Name: "FirstNameInput"
+              Type: "TextInput"
+              Properties:
+                HintText: "Enter first name"
+                BorderThickness: "1"
+                BorderColor: "RGBA(150, 150, 150, 1)"
+                Height: "40"
+                Width: "400"
+                X: "440"
+                Y: "70"
+                Default: "=If(isEditMode, selectedEmployee.FirstName, '')"
+
+            # Last Name
+            - Name: "LastNameLabel"
+              Type: "Label"
+              Properties:
+                Text: "Last Name *"
+                FontSize: "12"
+                X: "860"
+                Y: "50"
+
+            - Name: "LastNameInput"
+              Type: "TextInput"
+              Properties:
+                HintText: "Enter last name"
+                BorderThickness: "1"
+                BorderColor: "RGBA(150, 150, 150, 1)"
+                Height: "40"
+                Width: "400"
+                X: "860"
+                Y: "70"
+                Default: "=If(isEditMode, selectedEmployee.LastName, '')"
+
+            # Email
+            - Name: "EmailLabel"
+              Type: "Label"
+              Properties:
+                Text: "Email *"
+                FontSize: "12"
+                X: "20"
+                Y: "130"
+
+            - Name: "EmailInput"
+              Type: "TextInput"
+              Properties:
+                HintText: "Enter email address"
+                Mode: "Email"
+                BorderThickness: "1"
+                BorderColor: "RGBA(150, 150, 150, 1)"
+                Height: "40"
+                Width: "400"
+                X: "20"
+                Y: "150"
+                Default: "=If(isEditMode, selectedEmployee.Email, '')"
+
+            # Phone
+            - Name: "PhoneLabel"
+              Type: "Label"
+              Properties:
+                Text: "Phone Number"
+                FontSize: "12"
+                X: "440"
+                Y: "130"
+
+            - Name: "PhoneInput"
+              Type: "TextInput"
+              Properties:
+                HintText: "Enter phone number"
+                Mode: "Phone"
+                BorderThickness: "1"
+                BorderColor: "RGBA(150, 150, 150, 1)"
+                Height: "40"
+                Width: "400"
+                X: "440"
+                Y: "150"
+                Default: "=If(isEditMode, selectedEmployee.Phone, '')"
+
+            # Department Section
+            - Name: "DepartmentSectionLabel"
+              Type: "Label"
+              Properties:
+                Text: "Department & Position"
+                FontSize: "18"
+                FontColor: "RGBA(0, 51, 102, 1)"
+                Bold: true
+                X: "20"
+                Y: "220"
+
+            # Department Dropdown
+            - Name: "DepartmentLabel"
+              Type: "Label"
+              Properties:
+                Text: "Department *"
+                FontSize: "12"
+                X: "20"
+                Y: "250"
+
+            - Name: "DepartmentDropdown"
+              Type: "Dropdown"
+              Properties:
+                Items: "=Sort(DepartmentList.Value, Name)"
+                Value: "=If(isEditMode, selectedEmployee.Department, '')"
+                Height: "40"
+                Width: "400"
+                X: "20"
+                Y: "270"
+                BorderThickness: "1"
+                BorderColor: "RGBA(150, 150, 150, 1)"
+
+            # Position
+            - Name: "PositionLabel"
+              Type: "Label"
+              Properties:
+                Text: "Position *"
+                FontSize: "12"
+                X: "440"
+                Y: "250"
+
+            - Name: "PositionInput"
+              Type: "TextInput"
+              Properties:
+                HintText: "Enter position/title"
+                BorderThickness: "1"
+                BorderColor: "RGBA(150, 150, 150, 1)"
+                Height: "40"
+                Width: "400"
+                X: "440"
+                Y: "270"
+                Default: "=If(isEditMode, selectedEmployee.Position, '')"
+
+            # Employment Details Section
+            - Name: "EmploymentSectionLabel"
+              Type: "Label"
+              Properties:
+                Text: "Employment Details"
+                FontSize: "18"
+                FontColor: "RGBA(0, 51, 102, 1)"
+                Bold: true
+                X: "20"
+                Y: "340"
+
+            # Start Date
+            - Name: "StartDateLabel"
+              Type: "Label"
+              Properties:
+                Text: "Start Date *"
+                FontSize: "12"
+                X: "20"
+                Y: "370"
+
+            - Name: "StartDatePicker"
+              Type: "DatePicker"
+              Properties:
+                Height: "40"
+                Width: "400"
+                X: "20"
+                Y: "390"
+                BorderThickness: "1"
+                BorderColor: "RGBA(150, 150, 150, 1)"
+                Default: "=If(isEditMode, selectedEmployee.StartDate, Today())"
+
+            # Employment Type
+            - Name: "EmploymentTypeLabel"
+              Type: "Label"
+              Properties:
+                Text: "Employment Type *"
+                FontSize: "12"
+                X: "440"
+                Y: "370"
+
+            - Name: "EmploymentTypeDropdown"
+              Type: "Dropdown"
+              Properties:
+                Items: "[{Value:\"Full-Time\"}, {Value:\"Part-Time\"}, {Value:\"Contract\"}, {Value:\"Intern\"}]"
+                Value: "=If(isEditMode, selectedEmployee.EmploymentType, '')"
+                Height: "40"
+                Width: "400"
+                X: "440"
+                Y: "390"
+                BorderThickness: "1"
+                BorderColor: "RGBA(150, 150, 150, 1)"
+
+            # Salary (if authorized)
+            - Name: "SalaryLabel"
+              Type: "Label"
+              Properties:
+                Text: "Salary"
+                FontSize: "12"
+                X: "860"
+                Y: "370"
+
+            - Name: "SalaryInput"
+              Type: "TextInput"
+              Properties:
+                HintText: "Enter salary"
+                Mode: "Number"
+                BorderThickness: "1"
+                BorderColor: "RGBA(150, 150, 150, 1)"
+                Height: "40"
+                Width: "400"
+                X: "860"
+                Y: "390"
+                Default: "=If(isEditMode, selectedEmployee.Salary, 0)"
+
+            # Contact Information Section
+            - Name: "ContactSectionLabel"
+              Type: "Label"
+              Properties:
+                Text: "Contact Information"
+                FontSize: "18"
+                FontColor: "RGBA(0, 51, 102, 1)"
+                Bold: true
+                X: "20"
+                Y: "460"
+
+            # Address
+            - Name: "AddressLabel"
+              Type: "Label"
+              Properties:
+                Text: "Address"
+                FontSize: "12"
+                X: "20"
+                Y: "490"
+
+            - Name: "AddressInput"
+              Type: "TextInput"
+              Properties:
+                HintText: "Enter street address"
+                BorderThickness: "1"
+                BorderColor: "RGBA(150, 150, 150, 1)"
+                Height: "40"
+                Width: "800"
+                X: "20"
+                Y: "510"
+                Default: "=If(isEditMode, selectedEmployee.Address, '')"
+
+            # City
+            - Name: "CityLabel"
+              Type: "Label"
+              Properties:
+                Text: "City"
+                FontSize: "12"
+                X: "20"
+                Y: "570"
+
+            - Name: "CityInput"
+              Type: "TextInput"
+              Properties:
+                HintText: "Enter city"
+                BorderThickness: "1"
+                BorderColor: "RGBA(150, 150, 150, 1)"
+                Height: "40"
+                Width: "400"
+                X: "20"
+                Y: "590"
+                Default: "=If(isEditMode, selectedEmployee.City, '')"
+
+            # State
+            - Name: "StateLabel"
+              Type: "Label"
+              Properties:
+                Text: "State/Province"
+                FontSize: "12"
+                X: "440"
+                Y: "570"
+
+            - Name: "StateInput"
+              Type: "TextInput"
+              Properties:
+                HintText: "Enter state/province"
+                BorderThickness: "1"
+                BorderColor: "RGBA(150, 150, 150, 1)"
+                Height: "40"
+                Width: "400"
+                X: "440"
+                Y: "590"
+                Default: "=If(isEditMode, selectedEmployee.State, '')"
+
+            # Postal Code
+            - Name: "PostalCodeLabel"
+              Type: "Label"
+              Properties:
+                Text: "Postal Code"
+                FontSize: "12"
+                X: "860"
+                Y: "570"
+
+            - Name: "PostalCodeInput"
+              Type: "TextInput"
+              Properties:
+                HintText: "Enter postal code"
+                BorderThickness: "1"
+                BorderColor: "RGBA(150, 150, 150, 1)"
+                Height: "40"
+                Width: "300"
+                X: "860"
+                Y: "590"
+                Default: "=If(isEditMode, selectedEmployee.PostalCode, '')"
+
+            # Action Buttons
+            - Name: "ButtonContainer"
+              Type: "FlexContainer"
+              Properties:
+                X: "20"
+                Y: "680"
+                Width: "1520"
+                Height: "80"
+                Direction: "Row"
+                JustifyContent: "FlexEnd"
+                Gap: "10"
+
+              Controls:
+                - Name: "SaveButton"
+                  Type: "Button"
+                  Properties:
+                    Text: "Save"
+                    Fill: "RGBA(0, 102, 204, 1)"
+                    FontColor: "Color.White"
+                    Height: "45"
+                    Width: "120"
+                    OnSelect: |
+                      =If(
+                        And(
+                          !IsBlank(EmployeeIDInput.Value),
+                          !IsBlank(FirstNameInput.Value),
+                          !IsBlank(LastNameInput.Value),
+                          !IsBlank(EmailInput.Value),
+                          !IsBlank(DepartmentDropdown.Value),
+                          !IsBlank(PositionInput.Value)
+                        ),
+                        If(
+                          isEditMode,
+                          Patch(
+                            EmployeeDatabase,
+                            LookUp(EmployeeDatabase, EmployeeID = selectedEmployeeId),
+                            {
+                              EmployeeID: EmployeeIDInput.Value,
+                              FirstName: FirstNameInput.Value,
+                              LastName: LastNameInput.Value,
+                              Email: EmailInput.Value,
+                              Phone: PhoneInput.Value,
+                              Department: DepartmentDropdown.Value,
+                              Position: PositionInput.Value,
+                              StartDate: StartDatePicker.Value,
+                              EmploymentType: EmploymentTypeDropdown.Value,
+                              Salary: Value(SalaryInput.Value),
+                              Address: AddressInput.Value,
+                              City: CityInput.Value,
+                              State: StateInput.Value,
+                              PostalCode: PostalCodeInput.Value
+                            }
+                          ),
+                          Collect(
+                            EmployeeDatabase,
+                            {
+                              EmployeeID: EmployeeIDInput.Value,
+                              FirstName: FirstNameInput.Value,
+                              LastName: LastNameInput.Value,
+                              Email: EmailInput.Value,
+                              Phone: PhoneInput.Value,
+                              Department: DepartmentDropdown.Value,
+                              Position: PositionInput.Value,
+                              StartDate: StartDatePicker.Value,
+                              EmploymentType: EmploymentTypeDropdown.Value,
+                              Salary: Value(SalaryInput.Value),
+                              Address: AddressInput.Value,
+                              City: CityInput.Value,
+                              State: StateInput.Value,
+                              PostalCode: PostalCodeInput.Value
+                            }
+                          )
+                        );
+                        Notify("Employee record saved successfully!", NotificationType.Success);
+                        Set(isEditMode, false);
+                        ResetForm(FormContainer),
+                        Notify("Please fill in all required fields (marked with *).", NotificationType.Error)
+                      )
+
+                - Name: "CancelButton"
+                  Type: "Button"
+                  Properties:
+                    Text: "Cancel"
+                    Fill: "RGBA(200, 200, 200, 1)"
+                    FontColor: "Color.Black"
+                    Height: "45"
+                    Width: "120"
+                    OnSelect: |
+                      =Set(isEditMode, false);
+                       ResetForm(FormContainer)
+
+                - Name: "ClearButton"
+                  Type: "Button"
+                  Properties:
+                    Text: "Clear"
+                    Fill: "RGBA(255, 128, 0, 1)"
+                    FontColor: "Color.White"
+                    Height: "45"
+                    Width: "120"
+                    OnSelect: |
+                      =ResetForm(FormContainer);
+                       Set(isEditMode, false)
+
+---
+
+# Validation Rules and Power Fx Formulas
+ValidationRules:
+  EmailValidation:
+    Formula: "=If(IsBlank(EmailInput.Value), true, If(IsMatch(EmailInput.Value, Email), true, false))"
+    ErrorMessage: "Please enter a valid email address"
+
+  PhoneValidation:
+    Formula: "=If(IsBlank(PhoneInput.Value), true, If(IsMatch(PhoneInput.Value, \"[0-9+-]\\d{7,}\"), true, false))"
+    ErrorMessage: "Please enter a valid phone number"
+
+  SalaryValidation:
+    Formula: "=If(IsBlank(SalaryInput.Value), true, If(Value(SalaryInput.Value) >= 0, true, false))"
+    ErrorMessage: "Salary must be a positive number"
+
+  EmployeeIDValidation:
+    Formula: "=If(IsBlank(EmployeeIDInput.Value), false, true)"
+    ErrorMessage: "Employee ID is required"
+
+  NameValidation:
+    Formula: "=And(!IsBlank(FirstNameInput.Value), !IsBlank(LastNameInput.Value))"
+    ErrorMessage: "First and Last names are required"
+
+---
+
+# Event Handlers
+EventHandlers:
+  OnAppStart:
+    - Action: "RefreshData"
+      DataSources:
+        - "EmployeeDatabase"
+        - "DepartmentList"
+
+  OnScreenShow:
+    - Action: "InitializeVariables"
+      Variables:
+        - Name: "isEditMode"
+          Value: "false"
+        - Name: "selectedEmployeeId"
+          Value: "''"
+
+---
+
+# Responsive Design Rules
+ResponsiveDesign:
+  Mobile:
+    ScreenWidth: "360"
+    StackLayout: "Vertical"
+    ColumnCount: "1"
+
+  Tablet:
+    ScreenWidth: "768"
+    StackLayout: "Vertical"
+    ColumnCount: "2"
+
+  Desktop:
+    ScreenWidth: "1600"
+    StackLayout: "Horizontal"
+    ColumnCount: "3"
